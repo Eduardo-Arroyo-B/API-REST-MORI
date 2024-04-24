@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define el modelo para la tabla Categorias
+model Categoria {
+  idCategoria  Int            @id @default(autoincrement())
+  categoria    String
+  Subcategoria Subcategoria[]
+}
+
+// Define el modelo para la tabla Subcategorias
+model Subcategoria {
+  idSubcategoria Int       @id @default(autoincrement())
+  subcategoria   String
+  idCategoria    Int
+  categoria      Categoria @relation(fields: [idCategoria], references: [idCategoria])
+  Titulo         Titulo[]
+}
+
+// Define el modelo para la tabla Autores
+model Autor {
+  idAutor           Int           @id @default(autoincrement())
+  nombre            String
+  nacionalidad      String
+  correoElectronico String?
+  TituloAutor       TituloAutor[]
+}
+
+// Define el modelo para la tabla Titulos
+model Titulo {
+  idTitulo         Int           @id @default(autoincrement())
+  titulo           String
+  editorial        String
+  isbn             String
+  fechaPublicacion DateTime
+  noEjemplares     Int
+  idSubcategoria   Int
+  subcategoria     Subcategoria  @relation(fields: [idSubcategoria], references: [idSubcategoria])
+  TituloAutor      TituloAutor[]
+}
+
+// Define el modelo para la tabla TitulosAutores
+model TituloAutor {
+  idAutor  Int
+  idTitulo Int
+  autor    Autor  @relation(fields: [idAutor], references: [idAutor])
+  titulo   Titulo @relation(fields: [idTitulo], references: [idTitulo])
+
+  @@id([idAutor, idTitulo])
+}
